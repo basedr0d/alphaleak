@@ -1,0 +1,27 @@
+[
+    {
+        "text": "main",
+        "link": "/",
+        "id": 1
+    },
+    {
+        "text": "storytime",
+        "link": "/storytime",
+        "id": 2
+    },
+    {
+        "text": "moonbasecity",
+        "link": "/moonbasecity",
+        "id": 3
+    },
+    {
+        "text": "buttons",
+        "link": "/buttons",
+        "id": 4
+    },
+    {
+        "text": "strat",
+        "link": "/strat",
+        "id": 5
+    }
+]

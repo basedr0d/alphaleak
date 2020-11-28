@@ -1,0 +1,32 @@
+[
+    {
+        "project": "SnowSwap",
+        "token": "SNOW",
+        "contractaddress": "0xE88e6E5E182B2bbdC3fb10E4b1c8bA83c25FBdd3"
+    },
+    {
+        "project": "YieldWars",
+        "token": "WAR",
+        "contractaddress": "0x9D79e728cFf8DEA7f75e3367BDEb15F462Fa3D60"
+    },
+    {
+        "project": "SushiSwap",
+        "token": "SUSHI",
+        "contractaddress": "0xB91473eE109229473F4D80Daa5CAfF17D4Bc4444"
+    },
+    {
+        "project": "AmpToken",
+        "token": "AMP",
+        "contractaddress": "0x1a7de6d59973Bd63bF8b1A4819dE6003d12eb10C"
+    },
+    {
+        "project": "Based Classic",
+        "token": "BASEDv1",
+        "contractaddress": "0x02d16D81C737793e031717Cd10F22C714bb4b8dC"
+    },
+    {
+        "project": "Gods Unchained",
+        "token": "ETH",
+        "contractaddress": "0xeA0e60a29384AB957212D406AB7Abc5Ac0bDF95b"
+    }
+]
