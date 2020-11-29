@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import basedABI from './contracts/based.json'
+import univ2BasedSusdABI from './contracts/univ2basedsusd.json'
 import React, { useState, useEffect } from 'react'
 import Dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -13,6 +14,18 @@ const History = () => {
     const signer = provider.getSigner()
     const basedAddress = "0x68A118Ef45063051Eac49c7e647CE5Ace48a68a5"
     const basedContract = new ethers.Contract(basedAddress, basedABI, provider)
+    //the uni contract
+    const basedsusdAddress = "0xaad22f5543fcdaa694b68f94be177b561836ae57"
+    const basedsusdContract = new ethers.Contract(basedsusdAddress, univ2BasedSusdABI, provider)
+
+    const getprice1 = basedsusdContract.price1CumulativeLast()
+
+    // token 0 is susd
+    //token 1 is based
+    // i want price1cumulativelast becaus that's the price of token 1  denominated in token 0 --> price of based denominated in susd
+    getprice1.then(response => {
+        console.log(response.toString());
+    })
 
     const supplyformat = (rebase) => {
         var supplystring = rebase.args.totalSupply.toString()
@@ -74,6 +87,7 @@ const History = () => {
                         <strong> Supplydelta:</strong> {((i > 0) ? history[i].totalsupply - history[i - 1].totalsupply : 0)}</li>
                 })}
             </ol>
+            <h2>{(!history.length > 0) && 'REBASE HISTORY IS LOADING...  '}</h2>
         </div>
     )
 }

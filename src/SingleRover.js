@@ -6,8 +6,13 @@ const SingleRover = ({ roverAddress, roverProject, roverToken }) => {
     console.log(roverAddress);
     const [roverBal, setRoverBal] = useState('...')
     const [rugReward, setRugReward] = useState('...')
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const signer = provider.getSigner()
+
+    let provider;
+    window.ethereum.enable().then(provider = new ethers.providers.Web3Provider(window.ethereum));
+    const signer = provider.getSigner();
+
+    // const provider = new ethers.providers.Web3Provider(window.ethereum)
+    // const signer = provider.getSigner()
     // const getbalance = provider.getBalance("ethers.eth")
     //   getbalance.then(response => {
     // const formatbalance = ethers.utils.formatEther(response)
