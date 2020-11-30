@@ -3,6 +3,7 @@ import {
     Link,
     useLocation
 } from "react-router-dom"
+import abovefoldimg from './based-city.gif'
 
 
 export const Navbar = ({ nav }) => {
@@ -15,6 +16,8 @@ export const Navbar = ({ nav }) => {
                 {nav.map((value) => {
                     return <span key={value.id}><Link key={value.id} to={value.link}>{value.text}</Link>  |  </span>
                 })}
+                <p />
+                <img alt='fuckoffwithyouralttextrules' src={abovefoldimg} width="450px" />
             </div>
         )
     }
@@ -38,7 +41,10 @@ export const Footer = ({ shill, footerimg, footertext }) => {
                 <p />
                 {footertext}
                 <p /><a href={shill.link}>{shill.text}</a>
+                <p /> <strong>if u like this u can donate here:
+                <p />0x984921f4019A8E9988A9262d20e22b80C032fEa0</strong>
                 <p /> <img src={footerimg} width="500" alt='' />
+
             </>
         )
     }

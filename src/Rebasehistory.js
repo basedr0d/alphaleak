@@ -15,34 +15,60 @@ const History = () => {
     const basedAddress = "0x68A118Ef45063051Eac49c7e647CE5Ace48a68a5"
     const basedContract = new ethers.Contract(basedAddress, basedABI, provider)
     //the uni contract
-    const basedsusdAddress = "0xaad22f5543fcdaa694b68f94be177b561836ae57"
-    const basedsusdContract = new ethers.Contract(basedsusdAddress, univ2BasedSusdABI, provider)
+    const univ2BasedSusdAddress = "0xaad22f5543fcdaa694b68f94be177b561836ae57"
+    const univ2BasedSusdContract = new ethers.Contract(univ2BasedSusdAddress, univ2BasedSusdABI, provider)
+    //Uni sync events are logged everytime anything happens with a uni pair. We are using this for historical prices.
+    var uniSyncEvents = univ2BasedSusdContract.filters.Sync(null, null)
 
-    const getprice1 = basedsusdContract.price1CumulativeLast()
+    // const getprice1 = univ2BasedSusdContract.price1CumulativeLast()
+    // const blocksperday = 5760
+    // async function getUniEvents() {
+    //     // const unisyncs = await univ2BasedSusdContract.queryFilter(uniSyncEvents, 11358694, 11358894)
+    //     console.log(unisyncs);
+    //     let res0 = unisyncs[0].args.reserve0.toString()
+    //     let res1 = unisyncs[0].args.reserve1.toString()
+    //     let dividedprice = unisyncs[0].args.reserve0.div(unisyncs[0].args.reserve1)
+    //     // const uniblock = await unisyncs[0].getBlock()
+    //     // const unitime = uniblock.timestamp
+    //     let res0format1 = ethers.utils.formatUnits(res0, 18)
+    //     let res1format1 = ethers.utils.formatUnits(res1, 18)
+
+    //     console.log(res0format1 / res1format1);
+
+    // }
+    // getUniEvents()
 
     // token 0 is susd
     //token 1 is based
     // i want price1cumulativelast becaus that's the price of token 1  denominated in token 0 --> price of based denominated in susd
-    getprice1.then(response => {
-        console.log(response.toString());
-    })
+    // getprice1.then(response => {
+    //     console.log(response.toString());
+    // })
 
-    const supplyformat = (rebase) => {
-        var supplystring = rebase.args.totalSupply.toString()
-        var formatsupply1 = ethers.utils.formatUnits(supplystring, 18)
-        var formatsupply2 = parseInt(formatsupply1.substr(0, 12))
-        return formatsupply2
+    const formatbignumber = (bignumber) => {
+        var bignumberstring = bignumber.toString()
+        var formatbignumber1 = ethers.utils.formatUnits(bignumberstring, 18)
+        var formatbignumber2 = Number(formatbignumber1.substr(0, 12))
+        return formatbignumber2
     }
 
     useEffect(() => {
 
         //this function  takes in a rebase object and returns an object with blocknumber, totalsupply, and time (strips away other shit)
-        const rebasewithtime = async (rebase) => {
-            let block = await rebase.getBlock()
-            let totalsupply = supplyformat(rebase)
+        const rebaseWithTimeandPrice = async (rebase) => {
             let blocknumber = rebase.blockNumber
+            const unisyncs = await univ2BasedSusdContract.queryFilter(uniSyncEvents, blocknumber, blocknumber + 100)
+            let block = await rebase.getBlock()
+            // console.log(unisyncs);
+            let res0 = formatbignumber(unisyncs[0].args.reserve0)
+            // console.log(res0);
+            let res1 = formatbignumber(unisyncs[0].args.reserve1)
+            // let res0format1 = ethers.utils.formatUnits(res0, 18)
+            // let res1format1 = ethers.utils.formatUnits(res1, 18)
+            let blockprice = (res0 / res1)
+            let totalsupply = formatbignumber(rebase.args.totalSupply)
             let rebasedate = Dayjs.unix(block.timestamp).utc().format('DD/MM/YYYY')
-            return { blocknumber, totalsupply, rebasedate }
+            return { blocknumber, totalsupply, rebasedate, blockprice }
         }
 
         //this function gets the current block
@@ -59,18 +85,17 @@ const History = () => {
             //get the current block of the chain
             const blocknow = await getcurrentblock()
             setCurrentblock(blocknow)
-
+            const firstbasedblock = 10685466
             // query the chain for the events for the specified blocks
-            const rebases = await basedContract.queryFilter(allrebaseevents, 10685466, blocknow)
+            const rebases = await basedContract.queryFilter(allrebaseevents, firstbasedblock, blocknow)
 
             // sends all rebases to be returned with time - sends all at once, finishes when all are returned.
 
             const rebasehistory = Promise.all(rebases.map((rebase) => {
-                return rebasewithtime(rebase)
+                return rebaseWithTimeandPrice(rebase)
             }))
 
             setHistory(await rebasehistory)
-
         }
 
         //call the async function that sets rebasehistory
@@ -80,13 +105,15 @@ const History = () => {
     return (
         <div>
             we are on block {currentblock}
-            <ol>
+            <table>
                 {history.map((rebase, i, history) => {
-                    return <li key={i + 1}><strong>Supply:</strong> {rebase.totalsupply},
-                    <strong> Datetime:</strong> {rebase.rebasedate},
-                        <strong> Supplydelta:</strong> {((i > 0) ? history[i].totalsupply - history[i - 1].totalsupply : 0)}</li>
+                    return <tr key={i + 1}>
+                        <td><strong>Supply:</strong> {parseInt(rebase.totalsupply)}</td>
+                        <td><strong> Datetime:</strong> {rebase.rebasedate}</td>
+                        <td><strong> Supplydelta:</strong> {((i > 0) ? parseInt(history[i].totalsupply - history[i - 1].totalsupply) : '4899803')}</td>
+                        <td><strong> Marketcap:</strong> {parseInt(rebase.blockprice * rebase.totalsupply)}</td></tr>
                 })}
-            </ol>
+            </table>
             <h2>{(!history.length > 0) && 'REBASE HISTORY IS LOADING...  '}</h2>
         </div>
     )
