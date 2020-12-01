@@ -7,6 +7,8 @@ import { Navbar, Footer } from './smallcomponents'
 import Moonbasecity from './moonbasecity'
 import Rovers from './Rovers'
 import History from './Rebasehistory'
+import Getprice from './getpricetime'
+
 // import Faketwap from './Faketwap'
 // import getbasedprice from './getbasedcumulativeprice'
 
@@ -46,6 +48,9 @@ const App = () => {
         </Route>
         <Route path="/moonbasecity">
           <Moonbasecity />
+        </Route>
+        <Route path="/getprice">
+          <Getprice />
         </Route>
         <Route path="/">
           <History />

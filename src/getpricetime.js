@@ -1,8 +1,10 @@
 import { ethers } from "ethers";
 import univ2BasedSusdABI from './contracts/univ2basedsusd.json'
 import fire from './config/firebase'
+import React from 'react'
 
-const getbasedcumulativeprice = () => {
+
+const Getprice = () => {
     const network = "homestead";
     const provider = ethers.getDefaultProvider(network, {
         etherscan: 'CT8EK3BA88F23TXUR7ER3PMPB1PZJ2HK6W',
@@ -21,7 +23,7 @@ const getbasedcumulativeprice = () => {
 
             let blocknumber = result[1].number
             let timestamp = result[1].timestamp
-            console.log(result);
+            console.log(result)
             fire.firestore()
                 .collection('Oracle')
                 .doc('TwapPoint')
@@ -29,15 +31,28 @@ const getbasedcumulativeprice = () => {
                     pricetimepostrebasetime: result[0].toString(),
                     timestamp: timestamp,
                     blocknumber: blocknumber
-                });
+                })
+            console.log({
+                pricetimepostrebasetime: result[0].toString(),
+                timestamp: timestamp,
+                blocknumber: blocknumber
+            });
+            return {
+                pricetimepostrebasetime: result[0].toString(),
+                timestamp: timestamp,
+                blocknumber: blocknumber
+            }
         })
     }
     )
 
-
+    return (
+        <div>
+            this is an experiment
+        </div>
+    )
 }
-export default getbasedcumulativeprice
-
+export default Getprice
 
 
   // useEffect(() => {

@@ -40,3 +40,4 @@ module.exports = (req, res) => {
     resultarray.then(result => res.status(200).send(result.pricetimepostrebasetime)
     )
 }
+
