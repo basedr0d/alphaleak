@@ -49,11 +49,14 @@ module.exports = (req, res) => {
                     pricetimepostrebasetime: result[0].toString(),
                     timestamp: result[1].timestamp,
                     blocknumber: result[1].number
-                });
+                }).then(function () {
+                    res.status(200).send('pricetime was '.concat(result[0],
+                        'on block ', result[1].number,
+                        'and timestamp ', result[1].timestamp))
+                }
+                )
 
-            res.status(200).send('pricetime was '.concat(result[0],
-                'on block ', result[1].number,
-                'and timestamp ', result[1].timestamp))
+
         }
         )
     }
