@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import univ2BasedSusdABI from '../src/contracts/univ2basedsusd.json'
 import fire from '../src/config/firebase'
 
-module.exports = (res) => {
+module.exports = (req, res) => {
     const network = "homestead";
     const provider = ethers.getDefaultProvider(network, {
         etherscan: 'CT8EK3BA88F23TXUR7ER3PMPB1PZJ2HK6W',
