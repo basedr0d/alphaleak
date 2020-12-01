@@ -14,30 +14,32 @@ module.exports = (req, res) => {
     const univ2BasedSusdAddress = "0xaad22f5543fcdaa694b68f94be177b561836ae57"
     const univ2BasedSusdContract = new ethers.Contract(univ2BasedSusdAddress, univ2BasedSusdABI, provider)
 
-    const resultarray = provider.getBlockNumber().then((result) => {
-        let promisearray = [univ2BasedSusdContract.price1CumulativeLast(), provider.getBlock(result)]
-        Promise.all(promisearray).then((result) => {
-            let blocknumber = result[1].number
-            let timestamp = result[1].timestamp
-            console.log(result);
+    // const resultarray = provider.getBlockNumber().then((result) => {
+    //     let promisearray = [univ2BasedSusdContract.price1CumulativeLast(), provider.getBlock(result)]
+    //     Promise.all(promisearray).then((result) => {
+    //         let blocknumber = result[1].number
+    //         let timestamp = result[1].timestamp
+    //         console.log(result);
 
-            fire.firestore()
-                .collection('Oracle')
-                .doc('TwapPoint')
-                .set({
-                    pricetimepostrebasetime: result[0].toString(),
-                    timestamp: timestamp,
-                    blocknumber: blocknumber
-                });
-            return {
-                pricetimepostrebasetime: result[0].toString(),
-                timestamp: timestamp,
-                blocknumber: blocknumber
-            }
-        })
-    }
-    )
-    resultarray.then(result => res.status(200).send(result.pricetimepostrebasetime)
-    )
+    //         fire.firestore()
+    //             .collection('Oracle')
+    //             .doc('TwapPoint')
+    //             .set({
+    //                 pricetimepostrebasetime: result[0].toString(),
+    //                 timestamp: timestamp,
+    //                 blocknumber: blocknumber
+    //             });
+    //         return {
+    //             pricetimepostrebasetime: result[0].toString(),
+    //             timestamp: timestamp,
+    //             blocknumber: blocknumber
+    //         }
+    //     })
+    // }
+    // )
+    // resultarray.then(result => res.status(200).send(result.pricetimepostrebasetime)
+    // )
+    provider.getBlockNumber().then(result => res.status(200).send(result))
+
 }
 
