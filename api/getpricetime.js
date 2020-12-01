@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import univ2BasedSusdABI from '../src/contracts/univ2basedsusd.json'
 import fire from '../src/config/firebase'
-
 module.exports = (req, res) => {
     const network = "homestead";
     const provider = ethers.getDefaultProvider(network, {
@@ -15,12 +14,13 @@ module.exports = (req, res) => {
     const univ2BasedSusdAddress = "0xaad22f5543fcdaa694b68f94be177b561836ae57"
     const univ2BasedSusdContract = new ethers.Contract(univ2BasedSusdAddress, univ2BasedSusdABI, provider)
 
-    provider.getBlockNumber().then((result) => {
+    const resultarray = provider.getBlockNumber().then((result) => {
         let promisearray = [univ2BasedSusdContract.price1CumulativeLast(), provider.getBlock(result)]
         Promise.all(promisearray).then((result) => {
             let blocknumber = result[1].number
             let timestamp = result[1].timestamp
             console.log(result);
+
             fire.firestore()
                 .collection('Oracle')
                 .doc('TwapPoint')
@@ -29,8 +29,14 @@ module.exports = (req, res) => {
                     timestamp: timestamp,
                     blocknumber: blocknumber
                 });
+            return {
+                pricetimepostrebasetime: result[0].toString(),
+                timestamp: timestamp,
+                blocknumber: blocknumber
+            }
         })
     }
     )
-    res.status(200).send('oracle sees price')
+    resultarray.then(result => res.status(200).send(result.pricetimepostrebasetime)
+    )
 }
