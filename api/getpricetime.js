@@ -41,7 +41,20 @@ module.exports = (req, res) => {
     // )
     provider.getBlockNumber().then(result => {
         let promisearray = [univ2BasedSusdContract.price1CumulativeLast(), provider.getBlock(result)]
-        Promise.all(promisearray).then((result) => { res.status(200).send(result[0]) }
+        Promise.all(promisearray).then((result) => {
+            fire.firestore()
+                .collection('Oracle')
+                .doc('TwapPoint')
+                .set({
+                    pricetimepostrebasetime: result[0].toString(),
+                    timestamp: result[1].timestamp,
+                    blocknumber: result[1].number
+                });
+
+            res.status(200).send('pricetime was '.concat(result[0],
+                'on block ', result[1].number,
+                'and timestamp ', result[1].timestamp))
+        }
         )
     }
 
