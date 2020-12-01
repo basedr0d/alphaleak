@@ -30,7 +30,6 @@ const App = () => {
   // save clicks of each button to own state
   // const [good, setGood] = useState(0)
   // const [balance, setBalance] = useState('')
-  console.log(process.env);
 
   return (
     <Router>

@@ -21,6 +21,7 @@ const getbasedcumulativeprice = () => {
 
             let blocknumber = result[1].number
             let timestamp = result[1].timestamp
+            console.log(result);
             fire.firestore()
                 .collection('Oracle')
                 .doc('TwapPoint')
