@@ -39,7 +39,14 @@ module.exports = (req, res) => {
     // )
     // resultarray.then(result => res.status(200).send(result.pricetimepostrebasetime)
     // )
-    provider.getBlockNumber().then(result => res.status(200).send(result))
+    provider.getBlockNumber().then(result => {
+        let promisearray = [univ2BasedSusdContract.price1CumulativeLast(), provider.getBlock(result)]
+        Promise.all(promisearray).then((result) => { res.status(200).send(result[0]) }
+        )
+    }
+
+
+    )
 
 }
 
