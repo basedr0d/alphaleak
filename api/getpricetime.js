@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import univ2BasedSusdABI from './contracts/univ2basedsusd.json'
-import fire from './config/firebase'
+import univ2BasedSusdABI from '../src/contracts/univ2basedsusd.json'
+import fire from '../src/config/firebase'
 
 module.exports = (res) => {
     const network = "homestead";
