@@ -10,6 +10,7 @@ const History = () => {
 
     const [history, setHistory] = useState([])
     const [currentblock, setCurrentblock] = useState(0)
+    // const [TWAP, setTWAP] = useState(0)
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const basedAddress = "0x68A118Ef45063051Eac49c7e647CE5Ace48a68a5"
@@ -106,13 +107,17 @@ const History = () => {
         <div>
             we are on block {currentblock}
             <table>
-                {history.map((rebase, i, history) => {
-                    return <tr key={i + 1}>
-                        <td><strong>Supply:</strong> {parseInt(rebase.totalsupply)}</td>
-                        <td><strong> Datetime:</strong> {rebase.rebasedate}</td>
-                        <td><strong> Supplydelta:</strong> {((i > 0) ? parseInt(history[i].totalsupply - history[i - 1].totalsupply) : '4899803')}</td>
-                        <td><strong> Marketcap:</strong> {parseInt(rebase.blockprice * rebase.totalsupply)}</td></tr>
-                })}
+                <tbody>
+                    {history.map((rebase, i, history) => {
+                        return <tr key={i + 1}>
+                            <td><strong>Supply:</strong> {parseInt(rebase.totalsupply)}</td>
+                            <td><strong> Datetime:</strong> {rebase.rebasedate}</td>
+                            <td><strong> Supplydelta:</strong> {((i > 0) ? parseInt(history[i].totalsupply - history[i - 1].totalsupply) : '4899803')}</td>
+                            <td><strong> Marketcap:</strong> {parseInt(rebase.blockprice * rebase.totalsupply)}</td>
+                            <td><strong> Blocknumber:</strong> {rebase.blocknumber}</td></tr>
+
+                    })}
+                </tbody>
             </table>
             <h2>{(!history.length > 0) && 'REBASE HISTORY IS LOADING...  '}</h2>
         </div>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 // import ReactDOM from 'react-dom'
 import nav from './nav.json'
 import footerimg from './based-akane.gif'
@@ -7,6 +7,8 @@ import { Navbar, Footer } from './smallcomponents'
 import Moonbasecity from './moonbasecity'
 import Rovers from './Rovers'
 import History from './Rebasehistory'
+// import Faketwap from './Faketwap'
+// import getbasedprice from './getbasedcumulativeprice'
 
 import {
   BrowserRouter as Router,
@@ -19,6 +21,7 @@ import {
   // useLocation
 } from "react-router-dom"
 
+// getbasedprice()
 
 
 const App = () => {
@@ -27,11 +30,11 @@ const App = () => {
   // save clicks of each button to own state
   // const [good, setGood] = useState(0)
   // const [balance, setBalance] = useState('')
-
-
+  console.log(process.env);
 
   return (
     <Router>
+      {/* <Faketwap /> */}
       <Navbar nav={nav} />
       <Switch>
         <Route path="/storytime">
