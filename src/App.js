@@ -8,6 +8,7 @@ import Moonbasecity from './moonbasecity'
 import Rovers from './Rovers'
 import History from './Rebasehistory'
 import Faketwap from './Faketwap'
+import Strat from './Strat'
 
 // import Faketwap from './Faketwap'
 // import getbasedprice from './getbasedcumulativeprice'
@@ -42,7 +43,8 @@ const App = () => {
           <Joseph />
         </Route>
         <Route path="/strat">
-          alpha        </Route>
+          <Strat />
+        </Route>
         <Route path="/buttons">
           <Rovers />
         </Route>
