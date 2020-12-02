@@ -93,34 +93,40 @@ const Faketwap = () => {
                     Promise.all(syncblocksarray).then(syncblocks => {
                         let oldblocktime = syncblocks[0]
                         let newblocktime = syncblocks[1]
-                        console.log('the most recent sync event was '.concat(formatunixtime(newblocktime)))
-                        console.log('the closest sync event before the last rebase was '.concat(formatunixtime(oldblocktime)))
 
-                        let bigNumPricetime2 = result[2]
-                        // console.log(bigNumPricetime2.toString());
-                        let bigNumPricetime1 = BigNumber.from(result[0].data().pricetimepostrebasetime)
-                        // console.log(bigNumPricetime1.toString());
-                        // let pricetime2 = BigNumber.from('2067695973578670000000000000000000000000000')
-                        // let pricetime1 = BigNumber.from('2067664046374310000000000000000000000000000')
+                        if (newblocktime !== oldblocktime) {
+                            console.log('the most recent sync event was '.concat(formatunixtime(newblocktime)))
+                            console.log('the closest sync event before the last rebase was '.concat(formatunixtime(oldblocktime)))
 
-                        let bigNumTime2 = BigNumber.from(newblocktime)
-                        let bigNumTime1 = BigNumber.from(oldblocktime)
+                            let bigNumPricetime2 = result[2]
+                            // console.log(bigNumPricetime2.toString());
+                            let bigNumPricetime1 = BigNumber.from(result[0].data().pricetimepostrebasetime)
+                            // console.log(bigNumPricetime1.toString());
+                            // let pricetime2 = BigNumber.from('2067695973578670000000000000000000000000000')
+                            // let pricetime1 = BigNumber.from('2067664046374310000000000000000000000000000')
 
-                        // let time2 = BigNumber.from('1606886655')
-                        // let time1 = BigNumber.from('1606876982')
+                            let bigNumTime2 = BigNumber.from(newblocktime)
+                            let bigNumTime1 = BigNumber.from(oldblocktime)
 
-                        let pricetimediff = bigNumPricetime2.sub(bigNumPricetime1)
-                        // console.log(pricetimediff.toString());
-                        let timeElapsed = bigNumTime2.sub(bigNumTime1)
-                        console.log(timeElapsed.toString());
+                            // let time2 = BigNumber.from('1606886655')
+                            // let time1 = BigNumber.from('1606876982')
 
-                        let codedTwap = pricetimediff.div(timeElapsed)
-                        // let decodeconst = BigNumber.from(2).pow(112)
-                        // let bigexpo = BigNumber.from('1000000000000000000')
-                        let decodedTwap = decode(codedTwap)
-                        console.log(formatbignumber(decodedTwap.toString()))
-                        setTWAP(formatbignumber(decodedTwap.toString()))
+                            let pricetimediff = bigNumPricetime2.sub(bigNumPricetime1)
+                            // console.log(pricetimediff.toString());
+                            let timeElapsed = bigNumTime2.sub(bigNumTime1)
+                            console.log(timeElapsed.toString());
 
+                            let codedTwap = pricetimediff.div(timeElapsed)
+                            // let decodeconst = BigNumber.from(2).pow(112)
+                            // let bigexpo = BigNumber.from('1000000000000000000')
+                            let decodedTwap = decode(codedTwap)
+                            console.log(formatbignumber(decodedTwap.toString()))
+                            setTWAP(formatbignumber(decodedTwap.toString()))
+
+                        }
+                        else if (newblocktime === oldblocktime) {
+                            setTWAP('oops bug fk')
+                        }
                     })
 
                     // let oldblocktime
