@@ -1,45 +1,39 @@
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import univ2BasedSusdABI from './contracts/univ2basedsusd.json'
 import React, { useState, useEffect } from 'react'
 import Dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import fire from '../src/config/firebase'
 Dayjs.extend(utc)
+
+// function decode(price) {
+//     return price.multipliedBy(1e18).dividedBy(new BN(2).pow(112))
+//   }
+
+// function calculateTWAP(priceCumulativeOld, priceCumulativeNew, timestampOld, timestampNew) {
+//     let bigpricetimeold = BigNumber.from(priceCumulativeOld)
+//     let bigpricetimenew = BigNumber.from(priceCumulativeNew)
+//     let bigtimeold = BigNumber.from(timestampOld)
+//     let bigtimenew = BigNumber.from(timestampNew)
+
+//     const timeElapsed = bigtimenew.sub(bigtimeold)
+//     return decode(bigpricetimenew.sub(bigpricetimeold).div(timeElapsed));
+// }
 
 const Faketwap = () => {
 
-    // const [currentblock, setCurrentblock] = useState(0)
-    const [TWAP, setTWAP] = useState('...')
+    const [TWAP, setTWAP] = useState('loading...')
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     //the uni contract
     const univ2BasedSusdAddress = "0xaad22f5543fcdaa694b68f94be177b561836ae57"
     const univ2BasedSusdContract = new ethers.Contract(univ2BasedSusdAddress, univ2BasedSusdABI, provider)
-    //Uni sync events are logged everytime anything happens with a uni pair. We are using this for historical prices.
-    var uniSyncEvents = univ2BasedSusdContract.filters.Sync(null, null)
-    // const test = univ2BasedSusdContract.price1CumulativeLast()
-    // const getprice1 = univ2BasedSusdContract.price1CumulativeLast()
-    // const blocksperday = 5760
-    // async function getUniEvents() {
-    //     // const unisyncs = await univ2BasedSusdContract.queryFilter(uniSyncEvents, 11358694, 11358894)
-    //     console.log(unisyncs);
-    //     let res0 = unisyncs[0].args.reserve0.toString()
-    //     let res1 = unisyncs[0].args.reserve1.toString()
-    //     let dividedprice = unisyncs[0].args.reserve0.div(unisyncs[0].args.reserve1)
-    //     // const uniblock = await unisyncs[0].getBlock()
-    //     // const unitime = uniblock.timestamp
-    //     let res0format1 = ethers.utils.formatUnits(res0, 18)
-    //     let res1format1 = ethers.utils.formatUnits(res1, 18)
-
-    //     console.log(res0format1 / res1format1);
-
-    // }
-    // getUniEvents()
-
-    // token 0 is susd
-    //token 1 is based
-    // i want price1cumulativelast becaus that's the price of token 1  denominated in token 0 --> price of based denominated in susd
-    // getprice1.then(response => {
-    //     console.log(response.toString());
-    // })
+    const db = fire.firestore()
+    const decode = (price) => {
+        let decodeconst = BigNumber.from(2).pow(112)
+        let bigexpo = BigNumber.from(10).pow(18)
+        let pricedivby = price.mul(bigexpo).div(decodeconst)
+        return pricedivby
+    }
 
     const formatbignumber = (bignumber) => {
         var bignumberstring = bignumber.toString()
@@ -48,129 +42,131 @@ const Faketwap = () => {
         return formatbignumber2
     }
 
+    // const getcurrentblock = async () => {
+    //     let blocknumber = await provider.getBlockNumber();
+    //     return blocknumber;
+    // }
+
+    const getblocktime = async (blocknumber) => {
+        let block = await provider.getBlock(blocknumber)
+        return block.timestamp
+    }
+
+    const formatunixtime = (timestamp) => {
+        return Dayjs.unix(timestamp).utc().format('HH:mm DD/MM/YY')
+    }
+
     useEffect(() => {
-
+        var uniSyncEvents = univ2BasedSusdContract.filters.Sync(null, null)
         //this function gets the current block
-        const getcurrentblock = async () => {
-            let blocknumber = await provider.getBlockNumber();
-            return blocknumber;
-        }
-        const getblocktime = async (blocknumber) => {
-            let block = await provider.getBlock(blocknumber)
-            return block.timestamp
-        }
 
-        const formatunixtime = (timestamp) => {
-            return Dayjs.unix(timestamp).utc().format('HH:mm DD/MM/YY')
-        }
         const fetchChainData = async () => {
 
-            //set the right contract event and params to query
-            // var allrebaseevents = basedContract.filters.LogRebase(null, null)
-
-            //get the current block of the chain
-            const blocksperday = 6500
-            const onedayinseconds = 24 * 60 * 60
-
             // const blocknow = await getcurrentblock()
-            const blocknow = 11342595
-            const latestblocktime = await getblocktime(blocknow)
-            console.log(formatunixtime(latestblocktime));
+            // const blocknow = 11342595
+            // const latestblocktime = await getblocktime(blocknow)
+            // console.log(formatunixtime(latestblocktime))
 
-            let roughguess = blocknow - blocksperday
-            const roughguessblocktime = await getblocktime(roughguess)
-            let gap = latestblocktime - roughguessblocktime - onedayinseconds
-            let averagesecsperblock = (latestblocktime - roughguessblocktime) / blocksperday
-            let bestguess = roughguess
-            let secondguess
-            if (gap > 60) {
-                secondguess = Math.round(blocknow - blocksperday + (gap / averagesecsperblock))
-                // console.log(secondguess);
-                let secondguessblocktime = await getblocktime(secondguess)
-                console.log(formatunixtime(secondguessblocktime))
-                bestguess = secondguess
-                gap = latestblocktime - secondguessblocktime - onedayinseconds
-                console.log(gap);
+            const docRef = db.collection('Oracle').doc('TwapPoint')
+            const unisyncs = (blocknumber) => univ2BasedSusdContract.queryFilter(uniSyncEvents, blocknumber - 250, blocknumber)
+
+            async function getlatestsync(block, defaulttime) {
+                let syncs = await unisyncs(block)
+                if (syncs.length === 0) return defaulttime
+                else {
+                    let newest = syncs.length - 1
+                    let lastsyncblock = syncs[newest].blockNumber
+                    return await getblocktime(lastsyncblock)
+                }
             }
-            else if (gap < -60) {
-                secondguess = Math.round(blocknow - blocksperday - (gap / averagesecsperblock))
-                // console.log(secondguess);
-                let secondguessblocktime = await getblocktime(secondguess)
-                console.log(formatunixtime(secondguessblocktime))
-                bestguess = secondguess
-                gap = latestblocktime - secondguessblocktime - onedayinseconds
-                // console.log(gap);
-            }
-            // console.log('best guess is' & bestguess);
-            //this function  takes in a rebase object and returns an object with blocknumber, totalsupply, and time (strips away other shit)
-            const calculateTWAP = async (startblock, endblock) => {
-                const unisyncs = await univ2BasedSusdContract.queryFilter(uniSyncEvents, startblock, endblock)
 
-                // console.log(unisyncs)
-                // console.log(unisyncs.length);
+            provider.getBlockNumber().then(result => {
 
-                const pricetimearray = unisyncs.map(async (sync, i, allsyncs) => {
-                    let res0 = formatbignumber(sync.args.reserve0)
-                    let res1 = formatbignumber(sync.args.reserve1)
-                    let price = res0 / res1
-                    // console.log(allsyncs[i]);
-                    let time1 = await getblocktime(sync.blockNumber)
-                    let time2
-                    if (i === allsyncs.length - 1) time2 = await getblocktime(blocknow)
-                    else time2 = await getblocktime(allsyncs[i + 1].blockNumber)
-                    let pricetimewhole = price * (time2 - time1)
-                    let secondsatprice = time2 - time1
-                    // return { pricetime:  pricetimewhole, time:  time2 }
-                    return { pricetime: pricetimewhole, time: secondsatprice }
+                let promisearray = [docRef.get(), provider.getBlock(result), univ2BasedSusdContract.price1CumulativeLast()]
+                Promise.all(promisearray).then(result => {
+
+                    //need to find timestamps of the blocks from the most recent sync events
+                    let oldblock = result[0].data().blocknumber
+                    let newblock = result[1].number
+                    let syncblocksarray = [getlatestsync(oldblock, result[0].data().timestamp), getlatestsync(newblock, result[1].timestamp)]
+
+                    Promise.all(syncblocksarray).then(syncblocks => {
+                        let oldblocktime = syncblocks[0]
+                        let newblocktime = syncblocks[1]
+                        console.log('the most recent sync event was '.concat(formatunixtime(newblocktime)))
+                        console.log('the closest sync event before the last rebase was '.concat(formatunixtime(oldblocktime)))
+
+                        let bigNumPricetime2 = result[2]
+                        // console.log(bigNumPricetime2.toString());
+                        let bigNumPricetime1 = BigNumber.from(result[0].data().pricetimepostrebasetime)
+                        // console.log(bigNumPricetime1.toString());
+                        // let pricetime2 = BigNumber.from('2067695973578670000000000000000000000000000')
+                        // let pricetime1 = BigNumber.from('2067664046374310000000000000000000000000000')
+
+                        let bigNumTime2 = BigNumber.from(newblocktime)
+                        let bigNumTime1 = BigNumber.from(oldblocktime)
+
+                        // let time2 = BigNumber.from('1606886655')
+                        // let time1 = BigNumber.from('1606876982')
+
+                        let pricetimediff = bigNumPricetime2.sub(bigNumPricetime1)
+                        // console.log(pricetimediff.toString());
+                        let timeElapsed = bigNumTime2.sub(bigNumTime1)
+                        console.log(timeElapsed.toString());
+
+                        let codedTwap = pricetimediff.div(timeElapsed)
+                        // let decodeconst = BigNumber.from(2).pow(112)
+                        // let bigexpo = BigNumber.from('1000000000000000000')
+                        let decodedTwap = decode(codedTwap)
+                        console.log(formatbignumber(decodedTwap.toString()))
+                        setTWAP(formatbignumber(decodedTwap.toString()))
+
+                    })
+
+                    // let oldblocktime
+                    // unisyncs(oldblock).then(lastsync => {
+                    //     if (lastsync.length === 0) { oldblocktime = result[2].data().timestamp }
+                    //     else {
+                    //         let newest = lastsync.length - 1
+                    //         let lastsyncblock = lastsync[newest].blockNumber
+                    //         getblocktime(lastsyncblock).then(result => {
+                    //             oldblocktime = result
+                    //             console.log(oldblocktime);
+                    //             // console.log('last sync before 8pmutc was '.concat(oldblocktime));
+                    //         })
+                    //     }
+                    // })
+
+                    // let newblocktime
+                    // unisyncs(newblock).then(lastsync => {
+                    //     if (lastsync.length === 0) { newblocktime = BigNumber.from(result[1].timestamp) }
+                    //     else {
+                    //         let newest = lastsync.length - 1
+                    //         let lastsyncblock = lastsync[newest].blockNumber
+                    //         getblocktime(lastsyncblock).then(result => {
+                    //             newblocktime = result
+                    //             console.log(newblocktime);
+                    //             // console.log('last sync before 8pmutc was '.concat(oldblocktime));
+                    //         })
+                    //     }
+                    // })
+
                 })
-                let pricetimesum
-                let timesum
-                Promise.all(pricetimearray).then((values) => {
-                    console.log(values[0].time);
-                    // pricetimesum = values.forEach()
-                    pricetimesum = values.reduce((a, b) => ({ pricetime: a.pricetime + b.pricetime }))
-                    timesum = values.reduce((a, b) => ({ time: a.time + b.time }));
-                    // timesum = values.reduce((a, b) => a.time + b.time, 0)
-                    console.log(pricetimesum)
-                    console.log(timesum);
-                    console.log(pricetimesum.pricetime / timesum.time);
-                    console.log(pricetimesum.pricetime / onedayinseconds);
-
-                });
-                // arr.reduce((a, b) => ({ x: a.x + b.x }));
-
-
-                // pricetimearray.then(result => { console.log(result) })
-
-                // let len = pricetimearray.length - 1
-                // console.log(pricetimearray[len].time - pricetimearray[0].time2);
-                // let secs = pricetimearray[len].time - pricetimearray[0].time2
-                // console.log(unisyncs);
-                // let res0 = formatbignumber(unisyncs[0].args.reserve0)
-                // // console.log(res0);
-                // let res1 = formatbignumber(unisyncs[0].args.reserve1)
-                // let res0format1 = ethers.utils.formatUnits(res0, 18)
-                // let res1format1 = ethers.utils.formatUnits(res1, 18)
-                // let blockprice = (res0 / res1)
-                // let totalsupply = formatbignumber(rebase.args.totalSupply)
-            }
-            calculateTWAP(bestguess, blocknow)
-
-
-            // const firstbasedblock = 10685466
-            // query the chain for the events for the specified blocks
-            // const rebases = await basedContract.queryFilter(allrebaseevents, firstbasedblock, blocknow)
-
-            // sends all rebases to be returned with time - sends all at once, finishes when all are returned.
+            })
         }
 
-        //call the async function that sets rebasehistory
         fetchChainData()
     }, [])
 
+    const twapstyles = {
+        fontSize: 18,
+        padding: 10,
+        position: 'absolute',
+        right: 0
+    }
     return (
-        <div>
-            {TWAP}
+        <div style={twapstyles} >
+            Rough TWAP Since Last Rebase: {TWAP}
         </div>
     )
 }

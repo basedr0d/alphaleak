@@ -6,6 +6,7 @@ import Dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 Dayjs.extend(utc)
 
+
 const History = () => {
 
     const [history, setHistory] = useState([])
@@ -21,37 +22,13 @@ const History = () => {
     //Uni sync events are logged everytime anything happens with a uni pair. We are using this for historical prices.
     var uniSyncEvents = univ2BasedSusdContract.filters.Sync(null, null)
 
-    // const getprice1 = univ2BasedSusdContract.price1CumulativeLast()
-    // const blocksperday = 5760
-    // async function getUniEvents() {
-    //     // const unisyncs = await univ2BasedSusdContract.queryFilter(uniSyncEvents, 11358694, 11358894)
-    //     console.log(unisyncs);
-    //     let res0 = unisyncs[0].args.reserve0.toString()
-    //     let res1 = unisyncs[0].args.reserve1.toString()
-    //     let dividedprice = unisyncs[0].args.reserve0.div(unisyncs[0].args.reserve1)
-    //     // const uniblock = await unisyncs[0].getBlock()
-    //     // const unitime = uniblock.timestamp
-    //     let res0format1 = ethers.utils.formatUnits(res0, 18)
-    //     let res1format1 = ethers.utils.formatUnits(res1, 18)
-
-    //     console.log(res0format1 / res1format1);
-
-    // }
-    // getUniEvents()
-
-    // token 0 is susd
-    //token 1 is based
-    // i want price1cumulativelast becaus that's the price of token 1  denominated in token 0 --> price of based denominated in susd
-    // getprice1.then(response => {
-    //     console.log(response.toString());
-    // })
-
     const formatbignumber = (bignumber) => {
         var bignumberstring = bignumber.toString()
         var formatbignumber1 = ethers.utils.formatUnits(bignumberstring, 18)
         var formatbignumber2 = Number(formatbignumber1.substr(0, 12))
         return formatbignumber2
     }
+
 
     useEffect(() => {
 

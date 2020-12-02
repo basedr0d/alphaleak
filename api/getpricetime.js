@@ -1,6 +1,19 @@
 import { ethers } from "ethers";
 import univ2BasedSusdABI from '../src/contracts/univ2basedsusd.json'
-import fire from '../src/config/firebase'
+// import fire from '../src/config/firebase'
+import admin from 'firebase-admin'
+// Fetch the service account key JSON file contents
+var serviceAccount = process.env.GOOGLE_AUTH
+
+// Initialize the app with a service account, granting admin privileges
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: 'https://alphaleak-3144e.firebaseio.com'
+});
+
+// As an admin, the app has access to read and write all data, regardless of Security Rules
+var db = admin.database();
+
 module.exports = (req, res) => {
     const network = "homestead";
     const provider = ethers.getDefaultProvider(network, {
@@ -42,8 +55,9 @@ module.exports = (req, res) => {
     provider.getBlockNumber().then(result => {
         let promisearray = [univ2BasedSusdContract.price1CumulativeLast(), provider.getBlock(result)]
         Promise.all(promisearray).then((result) => {
-            fire.firestore()
-                .collection('Oracle')
+
+
+            db.collection('Oracle')
                 .doc('TwapPoint')
                 .set({
                     pricetimepostrebasetime: result[0].toString(),
@@ -51,8 +65,8 @@ module.exports = (req, res) => {
                     blocknumber: result[1].number
                 }).then(function () {
                     res.status(200).send('pricetime was '.concat(result[0],
-                        'on block ', result[1].number,
-                        'and timestamp ', result[1].timestamp))
+                        ' on block ', result[1].number,
+                        ' and timestamp ', result[1].timestamp))
                 }
                 )
 
