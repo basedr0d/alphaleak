@@ -4,6 +4,7 @@ import univ2BasedSusdABI from './contracts/univ2basedsusd.json'
 import React, { useState, useEffect } from 'react'
 import Dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import fire from '../src/config/firebase'
 Dayjs.extend(utc)
 
 
@@ -21,14 +22,15 @@ const History = () => {
     const univ2BasedSusdContract = new ethers.Contract(univ2BasedSusdAddress, univ2BasedSusdABI, provider)
     //Uni sync events are logged everytime anything happens with a uni pair. We are using this for historical prices.
     var uniSyncEvents = univ2BasedSusdContract.filters.Sync(null, null)
-
+    const db = fire.firestore()
+    let blocktostart
+    let dbarray
     const formatbignumber = (bignumber) => {
         var bignumberstring = bignumber.toString()
         var formatbignumber1 = ethers.utils.formatUnits(bignumberstring, 18)
         var formatbignumber2 = Number(formatbignumber1.substr(0, 12))
         return formatbignumber2
     }
-
 
     useEffect(() => {
 
@@ -37,9 +39,7 @@ const History = () => {
             let blocknumber = rebase.blockNumber
             const unisyncs = await univ2BasedSusdContract.queryFilter(uniSyncEvents, blocknumber, blocknumber + 100)
             let block = await rebase.getBlock()
-            // console.log(unisyncs);
             let res0 = formatbignumber(unisyncs[0].args.reserve0)
-            // console.log(res0);
             let res1 = formatbignumber(unisyncs[0].args.reserve1)
             // let res0format1 = ethers.utils.formatUnits(res0, 18)
             // let res1format1 = ethers.utils.formatUnits(res1, 18)
@@ -54,7 +54,7 @@ const History = () => {
             let block = await provider.getBlockNumber();
             return block;
         }
-
+        // This function doesnt actually run until we've checked whether or not the database is up to date. It gets run in the database get below.
         const fetchChainData = async () => {
 
             //set the right contract event and params to query
@@ -63,21 +63,56 @@ const History = () => {
             //get the current block of the chain
             const blocknow = await getcurrentblock()
             setCurrentblock(blocknow)
-            const firstbasedblock = 10685466
+            // const firstbasedblock = 10685466
             // query the chain for the events for the specified blocks
-            const rebases = await basedContract.queryFilter(allrebaseevents, firstbasedblock, blocknow)
+            const rebases = await basedContract.queryFilter(allrebaseevents, blocktostart, blocknow)
 
             // sends all rebases to be returned with time - sends all at once, finishes when all are returned.
 
-            const rebasehistory = Promise.all(rebases.map((rebase) => {
+            Promise.all(rebases.map((rebase) => {
                 return rebaseWithTimeandPrice(rebase)
-            }))
+            })).then(newrebasehistory => {
+                console.log(newrebasehistory)
+                if (newrebasehistory.length > 0) {
+                    var batch = db.batch()
+                    newrebasehistory.forEach((rebase) => {
+                        batch.set(db.collection('Rebases').doc(String(rebase.blocknumber)), rebase)
+                    })
+                    batch.commit().then(() => {
+                        console.log(dbarray);
+                        let allrebasehistory = dbarray.concat(newrebasehistory)
+                        // console.log(allrebasehistory);
+                        setHistory(allrebasehistory)
+                    })
+                        .catch(error => {
+                            console.log('Error - ' + error.message)
+                        })
+                }
+            })
 
-            setHistory(await rebasehistory)
         }
 
-        //call the async function that sets rebasehistory
-        fetchChainData()
+        //this checks the database for rebases, if there's data it uses it and only fetches from the latest block onwards
+        //if no data then it fetches as much as possible from first based block which is 10685466
+
+        db.collection("Rebases").get()
+            .then((snapshot) => {
+                dbarray = snapshot.docs.map((rebasedoc) => rebasedoc.data())
+                if (dbarray.length > 0) {
+                    setHistory(dbarray)
+                    blocktostart = dbarray[dbarray.length - 1].blocknumber + 1
+                    fetchChainData()
+                } else {
+                    blocktostart = 10685466
+                    console.log("No rebases found");
+                    fetchChainData()
+                }
+            }).catch(function (error) {
+                blocktostart = 10685466
+                console.log("Error getting rebases", error)
+                fetchChainData()
+            })
+
     }, [])
 
     return (

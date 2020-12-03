@@ -4,6 +4,7 @@ import {
     useLocation
 } from "react-router-dom"
 import abovefoldimg from './based-city.gif'
+import logoimg from './astrobased.png'
 
 
 export const Navbar = ({ nav }) => {
@@ -15,7 +16,7 @@ export const Navbar = ({ nav }) => {
             <div>
                 {nav.map((value) => {
                     return <span key={value.id}><Link key={value.id} to={value.link}>{value.text}</Link>  |  </span>
-                })}
+                })} <img src={logoimg} alt="astr0bas3d" width='30px' />
                 <p />
                 <img alt='fuckoffwithyouralttextrules' src={abovefoldimg} width="450px" />
             </div>

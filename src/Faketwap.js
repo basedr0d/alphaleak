@@ -65,7 +65,6 @@ const Faketwap = () => {
             // const blocknow = await getcurrentblock()
             // const blocknow = 11342595
             // const latestblocktime = await getblocktime(blocknow)
-            // console.log(formatunixtime(latestblocktime))
 
             const docRef = db.collection('Oracle').doc('TwapPoint')
             const unisyncs = (blocknumber) => univ2BasedSusdContract.queryFilter(uniSyncEvents, blocknumber - 1000, blocknumber)
@@ -78,8 +77,8 @@ const Faketwap = () => {
                 }
                 else {
                     let newest = syncs.length - 1
-                    console.log(syncs[newest].blockNumber);
-                    console.log(syncs[newest].args.reserve0 / syncs[newest].args.reserve1)
+                    // console.log(syncs[newest].blockNumber);
+                    // console.log(syncs[newest].args.reserve0 / syncs[newest].args.reserve1)
                     let lastsyncblock = syncs[newest].blockNumber
                     return await getblocktime(lastsyncblock)
                 }
@@ -100,8 +99,8 @@ const Faketwap = () => {
                         let newblocktime = syncblocks[1]
 
                         if (newblocktime !== oldblocktime) {
-                            console.log('the most recent sync event was '.concat(formatunixtime(newblocktime)))
-                            console.log('the closest sync event before the last rebase was '.concat(formatunixtime(oldblocktime)))
+                            // console.log('the most recent sync event was '.concat(formatunixtime(newblocktime)))
+                            // console.log('the closest sync event before the last rebase was '.concat(formatunixtime(oldblocktime)))
 
                             let bigNumPricetime2 = result[2]
                             // console.log(bigNumPricetime2.toString());
@@ -119,13 +118,13 @@ const Faketwap = () => {
                             let pricetimediff = bigNumPricetime2.sub(bigNumPricetime1)
                             // console.log(pricetimediff.toString());
                             let timeElapsed = bigNumTime2.sub(bigNumTime1)
-                            console.log(timeElapsed.toString());
+                            // console.log(timeElapsed.toString());
 
                             let codedTwap = pricetimediff.div(timeElapsed)
                             // let decodeconst = BigNumber.from(2).pow(112)
                             // let bigexpo = BigNumber.from('1000000000000000000')
                             let decodedTwap = decode(codedTwap)
-                            console.log(formatbignumber(decodedTwap.toString()))
+                            // console.log(formatbignumber(decodedTwap.toString()))
                             setTWAP(formatbignumber(decodedTwap.toString()))
 
                         }
