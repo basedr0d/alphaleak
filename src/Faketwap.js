@@ -68,13 +68,18 @@ const Faketwap = () => {
             // console.log(formatunixtime(latestblocktime))
 
             const docRef = db.collection('Oracle').doc('TwapPoint')
-            const unisyncs = (blocknumber) => univ2BasedSusdContract.queryFilter(uniSyncEvents, blocknumber - 250, blocknumber)
+            const unisyncs = (blocknumber) => univ2BasedSusdContract.queryFilter(uniSyncEvents, blocknumber - 1000, blocknumber)
 
             async function getlatestsync(block, defaulttime) {
                 let syncs = await unisyncs(block)
-                if (syncs.length === 0) return defaulttime
+                if (syncs.length === 0) {
+                    console.log('no blocks');
+                    return defaulttime
+                }
                 else {
                     let newest = syncs.length - 1
+                    console.log(syncs[newest].blockNumber);
+                    console.log(syncs[newest].args.reserve0 / syncs[newest].args.reserve1)
                     let lastsyncblock = syncs[newest].blockNumber
                     return await getblocktime(lastsyncblock)
                 }
