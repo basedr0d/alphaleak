@@ -43,18 +43,7 @@ const Strat = () => {
 
     return (
         <div>
-            <ReactPlayer
-                url={vidsrc}
-                config={{
-                    muted: true,
-                    volume: 1,
-                    file: {
-                        forceVideo: true,
-                        attributes: { controls: true, autoplay: true, muted: true, preload: 'auto', },
-                        playing: true
-                    }
-                }}
-            />
+            
         </div>
     )
 }
