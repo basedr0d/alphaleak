@@ -1,6 +1,8 @@
 import React from 'react'
 import { ethers } from "ethers";
 import univ2BasedSusdABI from '../src/contracts/univ2basedsusd.json'
+import ReactPlayer from 'react-player'
+import vidsrc from './ampledork.mp4'
 // import fire from '../src/config/firebase'
 
 const Strat = () => {
@@ -41,7 +43,18 @@ const Strat = () => {
 
     return (
         <div>
-            alpha
+            <ReactPlayer
+                url={vidsrc}
+                config={{
+                    muted: true,
+                    volume: 1,
+                    file: {
+                        forceVideo: true,
+                        attributes: { controls: true, autoplay: true, muted: true, preload: 'auto', },
+                        playing: true
+                    }
+                }}
+            />
         </div>
     )
 }
