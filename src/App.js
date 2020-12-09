@@ -9,6 +9,7 @@ import Rovers from './Rovers'
 import History from './Rebasehistory'
 import Faketwap from './Faketwap'
 import Strat from './Strat'
+import BasedTV from './Basedtv'
 
 // import Faketwap from './Faketwap'
 // import getbasedprice from './getbasedcumulativeprice'
@@ -36,7 +37,6 @@ const App = () => {
 
   return (
     <Router>
-      {<Faketwap />}
       <Navbar nav={nav} />
       <Switch>
         <Route path="/storytime">
@@ -51,7 +51,12 @@ const App = () => {
         <Route path="/moonbasecity">
           <Moonbasecity />
         </Route>
+        <Route path="/basedtv">
+          <BasedTV />
+        </Route>
         <Route path="/">
+        <Faketwap />
+
           <History />
         </Route>
       </Switch>

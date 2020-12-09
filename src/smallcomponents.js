@@ -5,12 +5,18 @@ import {
 } from "react-router-dom"
 import abovefoldimg from './based-city.gif'
 import logoimg from './astrobased.png'
-
+import classes from './BackgroundVideo.module.css';
 
 export const Navbar = ({ nav }) => {
     const location = useLocation()
 
-    if (location.pathname === "/moonbasecity") { return (<></>) }
+    if (location.pathname === "/moonbasecity" || location.pathname === "/basedtv") 
+    { return (
+        <div className={classes.Content} >  
+        {nav.map((value) => {
+            return <span key={value.id}><Link key={value.id} to={value.link}>{value.text}</Link>  |  </span>
+        })}</div>
+        ) }
     else {
         return (
             <div>
@@ -35,7 +41,7 @@ export const Header = ({ title, heading }) => {
 
 export const Footer = ({ shill, footerimg, footertext }) => {
     const location = useLocation()
-    if (location.pathname === "/moonbasecity") { return (<></>) }
+    if (location.pathname === "/moonbasecity" || location.pathname === "/basedtv") { return (<></>) }
     else {
         return (
             <>

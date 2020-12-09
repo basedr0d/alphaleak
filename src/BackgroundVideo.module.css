@@ -1,7 +1,7 @@
 .Container {
     position: relative;
     min-height: 300px;
-    max-height: 800px;
+    max-height: 100vh;
     overflow: hidden;
     background-color: black;
     margin:-8px;
@@ -15,8 +15,10 @@
   
   /* Add some content at the bottom of the video/page */
   .Content {
+    z-index:1;
     position: fixed;
-    top: 0px;
+    left:10px;
+    bottom: 20px;
     width: 100%;
     padding-top: 9px;
   }
@@ -24,3 +26,24 @@
   }
   .Content a:hover{color: blueviolet;
   }
+
+  .Mutebutton {
+    background-color:rgba(255, 255, 255,0.1);
+    z-index:1;
+    position: fixed;
+    bottom:20px;
+    right: 20px;
+    width: 5vw;
+    height: 5vw;
+    border: none;
+    cursor: pointer;
+    border-radius:50%;
+  }
+/* Make the hover responsive */
+
+  .Mutebutton :hover {
+    background-color:rgba(255, 255, 255, 0.05);
+    border-radius:50%;
+  }
+
+/* Make the image responsive */

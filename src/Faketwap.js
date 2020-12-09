@@ -171,7 +171,8 @@ const Faketwap = () => {
     const twapstyles = {
         fontSize: 18,
         padding: 10,
-        position: 'absolute',
+        position: 'fixed',
+        top:10,
         right: 0,
         fontWeight: 'bold'
     }

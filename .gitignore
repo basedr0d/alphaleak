@@ -28,3 +28,4 @@ yarn-error.log*
 alphaleak and example.code-workspace
 /src/oldstuff
 /src/ampledork.mp4
+.eslintcache

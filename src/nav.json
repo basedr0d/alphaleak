@@ -20,8 +20,13 @@
         "id": 4
     },
     {
+        "text": "basedTV",
+        "link": "/basedtv",
+        "id": 5
+    },
+    {
         "text": "strat",
         "link": "/strat",
-        "id": 5
+        "id": 6
     }
 ]
