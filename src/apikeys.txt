@@ -1,3 +1,0 @@
-let apikey = "jx9Zscv2AHsgsAijB64W"
-let secretkey = "8lrPHeqWoklvw75L3WwP0GTm74cttgM8"
-const publitio = new PublitioAPI(apikey, secretkey)
