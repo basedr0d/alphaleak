@@ -6,6 +6,7 @@ import utc from 'dayjs/plugin/utc'
 import fire from '../src/config/firebase'
 Dayjs.extend(utc)
 
+
 // function decode(price) {
 //     return price.multipliedBy(1e18).dividedBy(new BN(2).pow(112))
 //   }

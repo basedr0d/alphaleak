@@ -1,52 +1,19 @@
 import React, { useState, useEffect } from 'react'
 // import { ethers } from "ethers";
 // import univ2BasedSusdABI from '../src/contracts/univ2basedsusd.json'
-// import vidsrc from './ampledork.mp4'
+import vidsrc from './ampledork.mp4'
 // import vidsrc2 from './moonbased.mp4'
 import classes from './BackgroundVideo.module.css'
 import ReactPlayer from 'react-player'
 import muteicon from './muteicon.png'
 import unmuteicon from './unmuteicon.png'
-import fire from './config/firebase'
-import vids from './vids.json'
 import logo from './basedtvlogo.gif'
-
-var storage = fire.storage();
-// var storageRef = storage.ref();
-
-let sources = shuffle(vids)
-
-// const displayVid = (vidRef) => {
-//   vidRef.getDownloadURL().then((url) => {
-// // console.log(url)
-// // console.log(typeof url);
-// sources.concat(url)})
-// .catch((error) => {
-//   console.log(error)
-// });
-// }
-
-
-// Promise.all(rebases.map((rebase) => {
-//   return rebaseWithTimeandPrice(rebase)
-// })).then(newrebasehistory => {
-//   console.log(newrebasehistory)
-//   if (newrebasehistory.length > 0) {
-//       var batch = db.batch()
-//       newrebasehistory.forEach((rebase) => {
-//           batch.set(db.collection('Rebases').doc(String(rebase.blocknumber)), rebase)
-//       })
-//       batch.commit().then(() => {
-//           console.log(dbarray);
-//           let allrebasehistory = dbarray.concat(newrebasehistory)
-//           // console.log(allrebasehistory);
-//           setHistory(allrebasehistory)
-//       })
-//           .catch(error => {
-//               console.log('Error - ' + error.message)
-//           })
-//   }
-// })
+import PublitioAPI from 'publitio_js_sdk'
+import vids from './vids.json'
+let apikey = "jx9Zscv2AHsgsAijB64W"
+let secretkey = "8lrPHeqWoklvw75L3WwP0GTm74cttgM8"
+// let endpoint = "https://api.publit.io" 
+const publitio = new PublitioAPI(apikey, secretkey)
 
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
@@ -56,31 +23,32 @@ function shuffle(a) {
   return a;
 }
 
-// storageRef.listAll().then((result) => {
-// console.log(result.items)
-
-//   Promise.all(result.items.map((vidRef) => {
-//     return vidRef.getDownloadURL()
-//   })).then(vidURLs => {
-//    sources = shuffle(vidURLs) 
-//   })
-
-// })  
-
-
-// result.items.forEach(async (vidRef)=> {
-// sources.concat(await vidRef.getDownloadURL())
-//   })
-// })
-// .catch((error)=> {
-// console.log(error)
-// })
-
 const BasedTV = () => {
+  // const [sources, setSources] = useState([])
+  let sources = shuffle(vids)
     const [currentVid, setCurrentVid] = useState(sources[0])
     const [muteState, setMuteState] = useState(true)
     const [icon,setIcon] = useState(muteicon)
-    // const [sources, setSources] = useState([])
+
+    // useEffect(() => {
+    //   console.log(vids)
+    //   setSources(shuffle(vids))
+    //   console.log(sources)
+    //   setCurrentVid(sources[0])
+
+    // //   publitio.call('/files/list', 'GET', { offset: '0', limit: '100'})
+    // //   .then(response => { 
+    // //     console.log(response)
+
+    // //     let videolist = response.files.map((file) => file.url_short)
+    // //     let shuffledlist = shuffle(videolist) 
+    // //     setSources(shuffledlist)
+    // //     console.log(sources)
+    // //     setCurrentVid(shuffledlist[0])  
+    
+    // //    })
+    // //   .catch(error => { console.log(error) })
+    // }, [])
 
     const muteHandler = () => {
         setMuteState(!muteState)
