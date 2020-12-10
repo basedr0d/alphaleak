@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react'
 // import { ethers } from "ethers";
 // import univ2BasedSusdABI from '../src/contracts/univ2basedsusd.json'
-import vidsrc from './ampledork.mp4'
+// import vidsrc from './ampledork.mp4'
 // import vidsrc2 from './moonbased.mp4'
 import classes from './BackgroundVideo.module.css'
 import ReactPlayer from 'react-player'
 import muteicon from './muteicon.png'
 import unmuteicon from './unmuteicon.png'
 import logo from './basedtvlogo.gif'
-import PublitioAPI from 'publitio_js_sdk'
+// import PublitioAPI from 'publitio_js_sdk'
 import vids from './vids.json'
-let apikey = "jx9Zscv2AHsgsAijB64W"
-let secretkey = "8lrPHeqWoklvw75L3WwP0GTm74cttgM8"
-// let endpoint = "https://api.publit.io" 
-const publitio = new PublitioAPI(apikey, secretkey)
+
 
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
@@ -24,7 +21,7 @@ function shuffle(a) {
 }
 
 const BasedTV = () => {
-  // const [sources, setSources] = useState([])
+  // const [sources, setSources] = useState([]) 
   let sources = shuffle(vids)
     const [currentVid, setCurrentVid] = useState(sources[0])
     const [muteState, setMuteState] = useState(true)
