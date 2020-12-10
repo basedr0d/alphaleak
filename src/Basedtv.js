@@ -8,11 +8,13 @@ import ReactPlayer from 'react-player'
 import muteicon from './muteicon.png'
 import unmuteicon from './unmuteicon.png'
 import fire from '../src/config/firebase'
+import vids from './vids.json'
+
 
 var storage = fire.storage();
-var storageRef = storage.ref();
+// var storageRef = storage.ref();
 
-let sources = ['https://firebasestorage.googleapis.com/v0/b/alphaleak-3144e.appspot.com/o/4-David%20Lynch%20Future%20Glasses-1.m4v?alt=media&token=e08996b0-cd8d-4056-b79d-6f286927a4e7']
+let sources = shuffle(vids)
 
 // const displayVid = (vidRef) => {
 //   vidRef.getDownloadURL().then((url) => {
@@ -54,16 +56,16 @@ function shuffle(a) {
   return a;
 }
 
-storageRef.listAll().then((result) => {
-console.log(result.items)
+// storageRef.listAll().then((result) => {
+// console.log(result.items)
 
-  Promise.all(result.items.map((vidRef) => {
-    return vidRef.getDownloadURL()
-  })).then(vidURLs => {
-   sources = shuffle(vidURLs) 
-  })
+//   Promise.all(result.items.map((vidRef) => {
+//     return vidRef.getDownloadURL()
+//   })).then(vidURLs => {
+//    sources = shuffle(vidURLs) 
+//   })
 
-})  
+// })  
 
 
 // result.items.forEach(async (vidRef)=> {
