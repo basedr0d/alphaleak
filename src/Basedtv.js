@@ -7,9 +7,9 @@ import classes from './BackgroundVideo.module.css'
 import ReactPlayer from 'react-player'
 import muteicon from './muteicon.png'
 import unmuteicon from './unmuteicon.png'
-import fire from '../src/config/firebase'
+import fire from './config/firebase'
 import vids from './vids.json'
-
+import logo from './basedtvlogo.gif'
 
 var storage = fire.storage();
 // var storageRef = storage.ref();
@@ -111,6 +111,9 @@ const BasedTV = () => {
   url={currentVid}
 
 />
+<div className={classes.Logo}>
+<img src={logo} width='100%'/>
+</div>  
 <div className={classes.Mutebutton}>
 <img src={icon} onClick={muteHandler} width='100%'/>
 </div>  
